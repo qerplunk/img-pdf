@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Simply combine images to PDF
 
-## Getting Started
+**We do _NOT_ store or collect any personal data, files, or images**
 
-First, run the development server:
+## Usage and Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Add blank pages  
+Add images to the page currently selected (_A red arrow will show you which one is selected_)  
+Select an image to move or resize  
+Delete images by selecting them and pressing `Delete selected`  
+Download as a single PDF file by pressing `IMG -> PDF`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Why?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Simple user interface and workflow that is useful for people who don't use technology
+- Some older adults don't know how to use image/word processor programs, too many buttons and text
+- Some "free" online image to PDF converters don't allow:
+  - Multiple images on one page
+  - Moving or resizing images
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Work in Progress (in order of importance)
 
-## Learn More
+- Ability to delete selected pages
+- Responsive UI (and better mobile experience)
+- Simple drawing features
+- Drag and drop images to import them
+- Import PDF files as images
 
-To learn more about Next.js, take a look at the following resources:
+## Additional info
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This is my first "large" project using Next.js, so code quality will not be the greatest.  
+**Expect bugs, data will be lost if the browser is closed or if the app crashes.**
