@@ -4,6 +4,9 @@ import { fabric } from "fabric";
 import { jsPDF } from "jspdf";
 import Image from "next/image";
 
+const defWidth = 794;
+const defHeight = 1123;
+
 const CanvasComponent = ({
   id,
   sel,
@@ -19,9 +22,6 @@ const CanvasComponent = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
-
-  const defWidth = 794;
-  const defHeight = 1123;
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -185,6 +185,10 @@ export function ImgPDF() {
           <button
             className="h-14 rounded-md border-2 border-white px-6 text-lg text-white hover:bg-red-500"
             onClick={() => {
+              const prevZoom = canvasZoom;
+              const prevW = defWidth * canvasZoom;
+              const prevH = defHeight * canvasZoom;
+
               const pdf = new jsPDF("p", "mm", "a4");
               c?.forEach((c, i) => {
                 if (i % 2 === 0) {
@@ -193,14 +197,29 @@ export function ImgPDF() {
                 if (i > 1) {
                   pdf.addPage();
                 }
+
+                c.setZoom(1);
+                c.setWidth(defWidth);
+                c.setHeight(defHeight);
+                c.renderAll();
+
                 pdf.addImage(
-                  c.toDataURL(),
+                  c.toDataURL({
+                    format: "image/jpeg",
+                    quality: 1.0,
+                    //multiplier: 1 / (canvasZoom + 0.2),
+                  }),
                   "JPEG",
                   0,
                   0,
                   pdf.internal.pageSize.getWidth(),
                   pdf.internal.pageSize.getHeight(),
                 );
+
+                c.setZoom(prevZoom);
+                c.setWidth(prevW);
+                c.setHeight(prevH);
+                c.renderAll();
               });
               pdf.save("img_combined.pdf");
             }}
