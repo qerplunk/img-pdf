@@ -25,38 +25,34 @@ const CanvasComponent = ({
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
 
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: defWidth,
-      height: defHeight,
-      backgroundColor: "white",
-    });
-    fabricCanvasRef.current = canvas;
+    if (!fabricCanvasRef.current) {
+      const canvas = new fabric.Canvas(canvasRef.current, {
+        width: defWidth,
+        height: defHeight,
+        backgroundColor: "white",
+      });
+      fabricCanvasRef.current = canvas;
 
-    setCanvases((prev: fabric.Canvas[]) =>
-      Array.isArray(prev) ? [...prev, canvas] : [canvas],
-    );
+      setCanvases((prev: fabric.Canvas[]) =>
+        Array.isArray(prev) ? [...prev, canvas] : [canvas],
+      );
 
-    sel(id, canvas);
-
-    canvas.on("mouse:down", function (e) {
       sel(id, canvas);
-    });
 
-    return () => {
-      canvas.dispose();
-    };
-  }, []);
+      canvas.on("mouse:down", () => {
+        sel(id, canvas);
+      });
+    }
+  }, [id, sel, setCanvases]);
 
   useEffect(() => {
     if (fabricCanvasRef.current) {
-      fabricCanvasRef.current.setZoom(zoom);
-      fabricCanvasRef.current.setWidth(
-        defWidth * fabricCanvasRef.current.getZoom(),
-      );
-      fabricCanvasRef.current.setHeight(
-        defHeight * fabricCanvasRef.current.getZoom(),
-      );
-      fabricCanvasRef.current.renderAll();
+      const canvas = fabricCanvasRef.current;
+
+      canvas.setZoom(zoom);
+      canvas.setWidth(defWidth * canvas.getZoom());
+      canvas.setHeight(defHeight * canvas.getZoom());
+      canvas.renderAll();
     }
   }, [zoom]);
 
@@ -203,10 +199,7 @@ export function ImgPDF() {
 
               const pdf = new jsPDF("p", "mm", "a4");
               c?.forEach((c, i) => {
-                if (i % 2 === 0) {
-                  return;
-                }
-                if (i > 1) {
+                if (i >= 1) {
                   pdf.addPage();
                 }
 
