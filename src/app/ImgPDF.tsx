@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric";
 import { jsPDF } from "jspdf";
 import Image from "next/image";
+import Link from "next/link";
 
 const defWidth = 794;
 const defHeight = 1123;
@@ -118,29 +119,40 @@ export function ImgPDF() {
     };
 
   return (
-    <div>
+    <div className="flex min-h-screen w-full bg-stone-900">
       <div className="fixed left-0 top-0 z-10 w-48 rounded-br-2xl bg-red-700 p-2">
         <div className="sticky flex flex-col">
-          <button
-            onClick={() => {
-              const activeOjb = selected?.canvas.getActiveObject();
-              if (activeOjb) {
-                selected?.canvas.remove(activeOjb);
-              }
-            }}
-            className="flex h-full w-full flex-row items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
-          >
-            {"-"}
-            <Image
-              src={"/assets/trash.png"}
-              width={86}
-              height={86}
-              alt={"Trash"}
-              priority={true}
-            />
-          </button>
+          <div className="rounded-2 flex h-full w-full items-center justify-center rounded-md border-2 border-white py-1">
+            <Link
+              href={"https://few-simple-tools.pages.dev/"}
+              className="flex h-full w-full items-center justify-center"
+            >
+              <p className="text-xl text-white">Home</p>
+            </Link>
+          </div>
 
           <div className="py-1">
+            <button
+              onClick={() => {
+                const activeOjb = selected?.canvas.getActiveObject();
+                if (activeOjb) {
+                  selected?.canvas.remove(activeOjb);
+                }
+              }}
+              className="flex h-full w-full flex-row items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
+            >
+              {"-"}
+              <Image
+                src={"/assets/trash.png"}
+                width={86}
+                height={86}
+                alt={"Trash"}
+                priority={true}
+              />
+            </button>
+          </div>
+
+          <div className="pb-1">
             <label
               htmlFor="image-upload"
               className="flex h-full w-full cursor-pointer items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
@@ -262,7 +274,7 @@ export function ImgPDF() {
         </div>
       </div>
 
-      <div className="flex justify-center pt-10">
+      <div className="flex w-full justify-center pt-10">
         <div className="flex flex-col">
           {[...Array(numCanvases)].map((_, i) => (
             <div key={i}>
