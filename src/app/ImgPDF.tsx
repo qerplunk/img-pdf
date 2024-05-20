@@ -116,9 +116,9 @@ export function ImgPDF() {
 
   return (
     <div className="flex min-h-screen w-full bg-stone-900">
-      <div className="fixed left-0 top-0 z-10 w-48 rounded-br-2xl bg-red-700 p-2">
+      <div className="fixed left-0 top-0 z-10 w-48 rounded-br-2xl bg-cyan-900 p-2">
         <div className="sticky flex flex-col">
-          <div className="rounded-2 flex h-full w-full items-center justify-center rounded-md border-2 border-white py-1">
+          <div className="rounded-2 flex h-full w-full items-center justify-center rounded-md border-2 border-white py-1 hover:bg-red-500">
             <Link
               href={"https://few-simple-tools.pages.dev/"}
               className="flex h-full w-full items-center justify-center"
@@ -235,7 +235,7 @@ export function ImgPDF() {
             <p className="text-center text-2xl text-white">Zoom</p>
             <span className="flex justify-center gap-4">
               <button
-                className="w-12 rounded-xl border-2 border-white text-3xl text-white"
+                className="w-12 rounded-xl border-2 border-white text-3xl text-white hover:bg-red-500"
                 onClick={() => {
                   setCanvasZoom((prev) => {
                     let newZoom = prev + 0.1;
@@ -249,7 +249,7 @@ export function ImgPDF() {
                 +
               </button>
               <button
-                className="w-12 rounded-xl border-2 border-white text-3xl text-white"
+                className="w-12 rounded-xl border-2 border-white text-3xl text-white hover:bg-red-500"
                 onClick={() => {
                   setCanvasZoom((prev) => {
                     let newZoom = prev - 0.1;
@@ -265,6 +265,9 @@ export function ImgPDF() {
             </span>
           </div>
         </div>
+        <p className="italic text-white">
+          If pages disappear, zoom in or out to refresh
+        </p>
       </div>
 
       <div className="flex w-full justify-center pt-10">
