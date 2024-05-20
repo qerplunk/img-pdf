@@ -5,5 +5,5 @@
 html,
 body,
 #__next {
-  @apply h-max bg-slate-800;
+  @apply h-max bg-stone-900;
 }
