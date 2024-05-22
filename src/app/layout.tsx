@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Images to PDF",
   description:
     "A web-based editor to combine and edit images, and export them as a pdf file",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
