@@ -86,7 +86,7 @@ export function ImgPDF() {
       const file = event.target.files[0];
       const reader = new FileReader();
 
-      reader.onload = function (f) {
+      reader.onload = function(f) {
         const data = f.target?.result;
         if (typeof data === "string") {
           fabric.Image.fromURL(data, (img) => {
@@ -116,18 +116,9 @@ export function ImgPDF() {
 
   return (
     <div className="flex min-h-screen w-full bg-stone-900">
-      <div className="fixed left-0 top-0 z-10 w-48 rounded-br-2xl bg-cyan-900 p-2">
+      <div className="fixed left-0 top-0 z-10 w-44 rounded-br-2xl bg-cyan-900 p-2">
         <div className="sticky flex flex-col">
-          <div className="rounded-2 flex h-full w-full items-center justify-center rounded-md border-2 border-white py-1 hover:bg-red-500">
-            <Link
-              href={"https://few-simple-tools.pages.dev/"}
-              className="flex h-full w-full items-center justify-center"
-            >
-              <p className="text-xl text-white">Home</p>
-            </Link>
-          </div>
-
-          <div className="py-1">
+          <div className="pb-1">
             <button
               onClick={() => {
                 const activeOjb = selected?.canvas.getActiveObject();
@@ -191,7 +182,7 @@ export function ImgPDF() {
           </div>
 
           <button
-            className="h-14 rounded-md border-2 border-white px-6 text-lg text-white hover:bg-red-500"
+            className="h-12 rounded-md border-2 border-white px-6 text-lg text-white hover:bg-red-500"
             onClick={() => {
               const prevZoom = canvasZoom;
               const prevW = defWidth * canvasZoom;
@@ -276,9 +267,7 @@ export function ImgPDF() {
             <div key={i}>
               <div className="flex items-center">
                 <p
-                  className={`pr-1 text-5xl font-bold text-red-500 ${
-                    selected?.id === `canvas${i}` ? "" : "invisible"
-                  }`}
+                  className={`pr-1 font-bold text-red-500 ${selected?.id === `canvas${i}` ? "" : "invisible"} ${canvasZoom < 0.8 ? "text-2xl" : "text-4xl"}`}
                 >
                   {"-->"}
                 </p>
@@ -296,6 +285,13 @@ export function ImgPDF() {
           ))}
         </div>
       </div>
+      <Link
+        href={"https://github.com/qerplunk/img-pdf"}
+        target="_blank"
+        className="absolute right-0 top-0"
+      >
+        <p className="rounded-bl-md bg-cyan-900 p-1 text-white">GitHub</p>
+      </Link>
     </div>
   );
 }

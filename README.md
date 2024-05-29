@@ -1,4 +1,4 @@
-# Simply combine images to PDF
+# Combine images to PDF
 
 **We do _NOT_ store or collect any personal data, files, or images**
 
@@ -21,12 +21,8 @@ Download as a single PDF file by pressing `IMG -> PDF`
 ## Work in Progress (in order of importance)
 
 - Ability to delete selected pages
-- Responsive UI (and better mobile experience)
-- Simple drawing features
 - Drag and drop images to import them
-- Import PDF files as images
 
 ## Additional info
 
-This is my first "large" project using Next.js, so code quality will not be the greatest.  
 **Expect bugs, data will be lost if the browser is closed or if the app crashes.**
