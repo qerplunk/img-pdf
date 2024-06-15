@@ -287,7 +287,12 @@ export function ImgPDF() {
 			<div className="flex w-full justify-center pt-10">
 				<div className="flex flex-col">
 					{canvases.map((value, _) => (
-						<div key={value} className="pb-4">
+						<div key={value} className="flex items-center pb-4">
+							<p
+								className={`pr-2 text-xl text-red-500 ${selected?.id === value ? "" : "invisible"}`}
+							>
+								{"-->"}
+							</p>
 							<CanvasComponent
 								id={value}
 								setCanvasSelected={setCanvasSelected}
