@@ -7,7 +7,7 @@
 Add blank pages  
 Add images to the page currently selected (_A red arrow will show you which one is selected_)  
 Select an image to move or resize  
-Delete images by selecting them and pressing `Delete selected`  
+Delete images or pages by selecting them and pressing `Delete selected`  
 Download as a single PDF file by pressing `IMG -> PDF`
 
 ## Why?
@@ -20,7 +20,6 @@ Download as a single PDF file by pressing `IMG -> PDF`
 
 ## Work in Progress (in order of importance)
 
-- Ability to delete selected pages
 - Drag and drop images to import them
 
 ## Additional info
