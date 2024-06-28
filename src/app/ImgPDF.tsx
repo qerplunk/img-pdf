@@ -366,15 +366,24 @@ export function ImgPDF() {
                 onClick={() => {
                   setShowAlert_RemoveConfirmation(false);
                   const remove_canvas_id = selected?.id;
+
+                  let remove_page_num = 0;
+                  canvases.map((value, index) => {
+                    if (remove_canvas_id === value) {
+                      remove_page_num = index;
+                      return;
+                    }
+                  });
+
                   setCanvases((prev) =>
                     prev.filter((id) => {
-                      return id != remove_canvas_id;
+                      return id !== remove_canvas_id;
                     }),
                   );
 
                   setC((prev) =>
                     prev?.filter((_, index) => {
-                      return index != remove_canvas_id;
+                      return index !== remove_page_num;
                     }),
                   );
                   setCanvasSelected(-1, c!.at(0)!);
