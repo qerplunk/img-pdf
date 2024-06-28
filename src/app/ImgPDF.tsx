@@ -155,9 +155,12 @@ export function ImgPDF() {
 
   return (
     <div className="flex min-h-screen w-full bg-stone-900 pb-28">
-      <div className="fixed left-0 top-0 z-10 w-44 rounded-br-2xl bg-cyan-900 p-2">
+      <div
+        id="SideMenu"
+        className="fixed left-0 top-0 z-10 w-44 rounded-br-2xl bg-cyan-900 p-2"
+      >
         <div className="sticky flex flex-col">
-          <div className="pb-1">
+          <div id="RemoveObjectCanvas" className="pb-1">
             <button
               onClick={() => {
                 if (selected !== undefined && selected.id !== -1) {
@@ -187,7 +190,7 @@ export function ImgPDF() {
             </button>
           </div>
 
-          <div className="pb-1">
+          <div id="AddImage" className="pb-1">
             <label
               htmlFor="image-upload"
               className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
@@ -210,7 +213,7 @@ export function ImgPDF() {
             />
           </div>
 
-          <div className="pb-1">
+          <div id="AddPage" className="pb-1">
             {" "}
             <button
               onClick={() => {
@@ -232,6 +235,7 @@ export function ImgPDF() {
           </div>
 
           <button
+            id="Download"
             className="h-12 rounded-md border-2 border-white px-6 text-lg text-white hover:bg-red-500"
             onClick={() => {
               const prevZoom = canvasZoom;
@@ -272,7 +276,7 @@ export function ImgPDF() {
           >
             {"IMG --> PDF"}
           </button>
-          <div className="justify-center py-2">
+          <div id="Zoom" className="justify-center py-2">
             <p className="select-none text-center text-2xl text-white">Zoom</p>
             <span className="flex justify-center gap-4">
               <button
@@ -312,7 +316,7 @@ export function ImgPDF() {
       </div>
 
       <div className="flex w-full justify-center pt-10">
-        <div className="flex flex-col">
+        <div id="Canvases" className="flex flex-col">
           {canvases.map((value, _) => (
             <div key={value} className="flex items-center pb-4">
               <p
@@ -337,7 +341,7 @@ export function ImgPDF() {
       </div>
 
       {showAlert_RemoveConfirmation && (
-        <div className="fixed inset-0 z-10">
+        <div id="Alert_RemoveConfirmation" className="fixed inset-0 z-10">
           <div
             className="absolute inset-0 bg-gray-400 opacity-50"
             onClick={() => {
