@@ -37,12 +37,9 @@ export const SideMenu = ({
           <button
             onClick={() => {
               if (canvasSelected !== undefined && canvasSelected.id !== -1) {
-                const activeOjbs = canvasSelected.canvas.getActiveObjects();
-                if (activeOjbs) {
-                  console.log("Removing selected objects");
-                  canvasSelected.canvas.remove(...activeOjbs);
-                  canvasSelected.canvas.renderAll();
-                  canvasSelected.canvas.requestRenderAll();
+                const activeOjb = canvasSelected.canvas.getActiveObject();
+                if (activeOjb) {
+                  canvasSelected.canvas.remove(activeOjb);
                 } else {
                   if (canvasSelected.id !== -1 && canvases?.length > 1) {
                     setShowAlert_RemoveConfirmation(true);
