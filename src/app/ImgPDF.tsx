@@ -47,7 +47,7 @@ const handleAddImage =
               2,
           });
           canvasSelected.canvas.add(img);
-          canvasSelected.canvas.requestRenderAll();
+          canvasSelected.canvas.setActiveObject(img);
           canvasSelected.canvas.renderAll();
         });
       }
@@ -82,6 +82,7 @@ const CanvasComponent = ({
         width: PAGE_WIDTH,
         height: PAGE_HEIGHT,
         backgroundColor: "white",
+        preserveObjectStacking: true,
       });
       fabricCanvasRef.current = canvas;
 
@@ -172,7 +173,7 @@ export function ImgPDF() {
                 setCanvasIDs={setC}
                 classname={
                   canvasSelected?.id === value
-                    ? "outline-dashed outline-3 outline-red-600 outline-offset-4"
+                    ? "outline-dashed outline-2 outline-red-600 outline-offset-4"
                     : ""
                 }
                 zoom={canvasZoom}
