@@ -139,7 +139,6 @@ export const SideMenu = ({
               canvas.setZoom(1);
               canvas.setWidth(PAGE_WIDTH);
               canvas.setHeight(PAGE_HEIGHT);
-              canvas.renderAll();
 
               pdf.addImage(
                 canvas.toDataURL({
@@ -159,7 +158,6 @@ export const SideMenu = ({
               canvas.setZoom(prevZoom);
               canvas.setWidth(prevW);
               canvas.setHeight(prevH);
-              canvas.renderAll();
             });
             pdf.save("img_combined.pdf");
           }}
