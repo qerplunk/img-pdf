@@ -183,6 +183,37 @@ export function ImgPDF() {
         </div>
       </div>
 
+      <div className="sticky top-0 h-80 w-36 bg-red-500">
+        <button
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.bringForward();
+          }}
+        >
+          Move forward
+        </button>
+        <button
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.bringToFront();
+          }}
+        >
+          Send to top
+        </button>
+        <button
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.sendBackwards();
+          }}
+        >
+          Move backwards
+        </button>
+        <button
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.sendToBack();
+          }}
+        >
+          Send to bottom
+        </button>
+      </div>
+
       {showAlert_RemoveConfirmation && (
         <AlertScreen
           canvasSelected={canvasSelected}

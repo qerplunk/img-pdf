@@ -54,7 +54,7 @@ export const SideMenu = ({
           >
             {"-"}
             <Image
-              src={"/assets/trash.png"}
+              src={"/assets/new_image.png"}
               width={86}
               height={86}
               alt={"Trash"}
@@ -144,7 +144,7 @@ export const SideMenu = ({
                 canvas.toDataURL({
                   format: "image/jpeg",
                   quality: 1.0,
-                  multiplier: 1.7,
+                  multiplier: 1.5,
                 }),
                 "JPEG",
                 0,
