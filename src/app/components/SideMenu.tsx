@@ -140,20 +140,20 @@ export const SideMenu = ({
               canvas.setWidth(PAGE_WIDTH);
               canvas.setHeight(PAGE_HEIGHT);
 
-              pdf.addImage(
-                canvas.toDataURL({
+              pdf.addImage({
+                imageData: canvas.toDataURL({
                   format: "image/jpeg",
                   quality: 1.0,
-                  multiplier: 1.5,
+                  multiplier: 1.7,
                 }),
-                "JPEG",
-                0,
-                0,
-                pdf.internal.pageSize.getWidth(),
-                pdf.internal.pageSize.getHeight(),
-                "",
-                "FAST",
-              );
+                format: "JPEG",
+                x: 0,
+                y: 0,
+                width: pdf.internal.pageSize.getWidth(),
+                height: pdf.internal.pageSize.getHeight(),
+                alias: "",
+                compression: "MEDIUM",
+              });
 
               canvas.setZoom(prevZoom);
               canvas.setWidth(prevW);
