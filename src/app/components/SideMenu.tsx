@@ -1,6 +1,61 @@
 import { jsPDF } from "jspdf";
+import { fabric } from "fabric";
 import Image from "next/image";
 import { MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT, PAGE_WIDTH } from "../PDF_Settings";
+
+const handleAddImage =
+  (
+    canvasSelected: { id: number; canvas: fabric.Canvas } | undefined,
+    canvasZoom: number,
+  ) =>
+  (event: any) => {
+    if (canvasSelected?.id === -1 || canvasSelected?.id === undefined) {
+      event.target.value = "";
+      return;
+    }
+
+    if (canvasSelected.canvas === undefined) {
+      return;
+    }
+
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (f) {
+      const data = f.target?.result;
+      if (typeof data === "string") {
+        fabric.Image.fromURL(data, (img) => {
+          img.scaleToWidth(
+            canvasSelected.canvas.getWidth() / (canvasZoom * 1.05),
+          );
+          if (img.getScaledHeight() > img.getScaledWidth()) {
+            img.scaleToHeight(
+              canvasSelected.canvas.getHeight() / (canvasZoom * 1.05),
+            );
+          }
+          img.set({
+            left:
+              (canvasSelected.canvas.getWidth() / canvasZoom -
+                img.getScaledWidth()) /
+              2,
+            top:
+              (canvasSelected.canvas.getHeight() / canvasZoom -
+                img.getScaledHeight()) /
+              2,
+          });
+          canvasSelected.canvas.add(img);
+          canvasSelected.canvas.setActiveObject(img);
+          canvasSelected.canvas.renderAll();
+        });
+      }
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+
+    event.target.value = "";
+  };
 
 export const SideMenu = ({
   canvasSelected,
@@ -13,7 +68,7 @@ export const SideMenu = ({
   canvasZoom,
   fabricCanvases,
   setCanvasZoom,
-  handleAddImage,
+  activeObj,
 }: {
   canvasSelected: { id: number; canvas: fabric.Canvas } | undefined;
   canvases: number[];
@@ -25,12 +80,12 @@ export const SideMenu = ({
   canvasZoom: number;
   fabricCanvases: fabric.Canvas[] | undefined;
   setCanvasZoom: Function;
-  handleAddImage: Function;
+  activeObj: boolean;
 }) => {
   return (
     <div
       id="SideMenu"
-      className="fixed left-0 top-0 z-10 w-44 rounded-br-2xl bg-cyan-900 p-2"
+      className="fixed left-0 top-0 z-10 w-40 rounded-br-2xl bg-cyan-900 p-2"
     >
       <div className="sticky flex flex-col">
         <div id="RemoveObjectCanvas" className="pb-1">
@@ -50,13 +105,12 @@ export const SideMenu = ({
                 setShowAlert_NoSelected(true);
               }
             }}
-            className="flex h-full w-full flex-row items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
+            className="flex h-full w-full flex-row items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
           >
-            {"-"}
             <Image
-              src={"/assets/new_image.png"}
-              width={86}
-              height={86}
+              src={"/assets/trash.png"}
+              width={70}
+              height={70}
               alt={"Trash"}
               priority={true}
             />
@@ -70,7 +124,7 @@ export const SideMenu = ({
                 ? "image-upload"
                 : ""
             }
-            className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
+            className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
             onClick={() => {
               if (
                 canvasSelected?.id === -1 ||
@@ -85,8 +139,8 @@ export const SideMenu = ({
             +
             <Image
               src={"/assets/new_image.png"}
-              width={86}
-              height={86}
+              width={70}
+              height={70}
               alt={"New image"}
               priority={true}
             />
@@ -108,13 +162,13 @@ export const SideMenu = ({
               setCanvases((prev: fabric.Canvas[]) => [...prev, nextBlankID]);
               setNextBlankID((prev: number) => prev + 1);
             }}
-            className="flex h-full w-full flex-row items-center justify-center rounded-md border-2 border-white text-3xl text-white hover:bg-red-500"
+            className="flex h-full w-full flex-row items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
           >
             +
             <Image
               src={"/assets/new_page.png"}
-              width={86}
-              height={86}
+              width={70}
+              height={70}
               alt={"New page"}
               priority={true}
             />
@@ -123,7 +177,7 @@ export const SideMenu = ({
 
         <button
           id="Download"
-          className="h-12 rounded-md border-2 border-white px-6 text-lg text-white hover:bg-red-500"
+          className="flex h-12 flex-row items-center justify-center rounded-sm border-2 border-white text-lg text-white hover:bg-red-500"
           onClick={() => {
             const prevZoom = canvasZoom;
             const prevW = PAGE_WIDTH * canvasZoom;
@@ -162,13 +216,20 @@ export const SideMenu = ({
             pdf.save("img_combined.pdf");
           }}
         >
-          {"IMG --> PDF"}
+          <Image
+            src={"/assets/new_image.png"}
+            width={40}
+            height={40}
+            alt={"New page"}
+            priority={true}
+          />
+          <p className="whitespace-nowrap">{"--> PDF"}</p>
         </button>
         <div id="Zoom" className="justify-center py-2">
-          <p className="select-none text-center text-2xl text-white">Zoom</p>
-          <span className="flex justify-center gap-4">
+          <p className="select-none text-center text-xl text-white">Zoom</p>
+          <span className="flex justify-center gap-x-4">
             <button
-              className="w-12 rounded-xl border-2 border-white text-3xl text-white hover:bg-red-500"
+              className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
                   let newZoom = prev + 0.1;
@@ -182,7 +243,7 @@ export const SideMenu = ({
               +
             </button>
             <button
-              className="w-12 rounded-xl border-2 border-white text-3xl text-white hover:bg-red-500"
+              className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
                   let newZoom = prev - 0.1;
@@ -198,9 +259,61 @@ export const SideMenu = ({
           </span>
         </div>
       </div>
-      <p className="select-none italic text-white">
-        If pages disappear, zoom in or out to refresh
-      </p>
+      <div className={`w-full space-y-1 text-white ${!activeObj && "hidden"}`}>
+        <p className="select-none text-center text-xl">Image settings</p>
+        <button
+          className="w-full border-2 border-white hover:bg-red-500"
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.bringForward();
+          }}
+        >
+          Move forward
+        </button>
+        <button
+          className="w-full border-2 border-white hover:bg-red-500"
+          onClick={() => {
+            canvasSelected?.canvas.getActiveObject()?.sendBackwards();
+          }}
+        >
+          Move backwards
+        </button>
+        <button
+          className="w-full border-2 border-white hover:bg-red-500"
+          onClick={() => {
+            if (canvasSelected) {
+              const img = canvasSelected.canvas.getActiveObject();
+
+              img?.set({
+                left:
+                  (canvasSelected.canvas.getWidth() / canvasZoom -
+                    img.getScaledWidth()) /
+                  2,
+              });
+              canvasSelected.canvas.renderAll();
+            }
+          }}
+        >
+          {"Center ↔"}
+        </button>
+        <button
+          className="w-full border-2 border-white hover:bg-red-500"
+          onClick={() => {
+            if (canvasSelected) {
+              const img = canvasSelected.canvas.getActiveObject();
+
+              img?.set({
+                top:
+                  (canvasSelected.canvas.getHeight() / canvasZoom -
+                    img.getScaledHeight()) /
+                  2,
+              });
+              canvasSelected.canvas.renderAll();
+            }
+          }}
+        >
+          {"Center ↕"}
+        </button>
+      </div>
     </div>
   );
 };

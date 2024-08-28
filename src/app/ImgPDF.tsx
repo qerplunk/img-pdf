@@ -6,72 +6,20 @@ import { AlertScreen, AlertTimeout } from "./components/Alerts";
 import { SideMenu } from "./components/SideMenu";
 import { PAGE_HEIGHT, PAGE_WIDTH } from "./PDF_Settings";
 
-const handleAddImage =
-  (
-    canvasSelected: { id: number; canvas: fabric.Canvas } | undefined,
-    canvasZoom: number,
-  ) =>
-  (event: any) => {
-    if (canvasSelected?.id === -1 || canvasSelected?.id === undefined) {
-      event.target.value = "";
-      return;
-    }
-
-    if (canvasSelected.canvas === undefined) {
-      return;
-    }
-
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function (f) {
-      const data = f.target?.result;
-      if (typeof data === "string") {
-        fabric.Image.fromURL(data, (img) => {
-          img.scaleToWidth(
-            canvasSelected.canvas.getWidth() / (canvasZoom * 1.2),
-          );
-          if (img.getScaledHeight() > img.getScaledWidth()) {
-            img.scaleToHeight(
-              canvasSelected.canvas.getHeight() / (canvasZoom * 1.2),
-            );
-          }
-          img.set({
-            left:
-              (canvasSelected.canvas.getWidth() / canvasZoom -
-                img.getScaledWidth()) /
-              2,
-            top:
-              (canvasSelected.canvas.getHeight() / canvasZoom -
-                img.getScaledHeight()) /
-              2,
-          });
-          canvasSelected.canvas.add(img);
-          canvasSelected.canvas.setActiveObject(img);
-          canvasSelected.canvas.renderAll();
-        });
-      }
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-
-    event.target.value = "";
-  };
-
 const CanvasComponent = ({
   id,
   setCanvasSelected,
   setCanvasIDs,
   classname,
   zoom,
+  setActiveObj,
 }: {
   id: number;
   setCanvasSelected: Function;
   setCanvasIDs: Function;
   classname: string;
   zoom: number;
+  setActiveObj: Function;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -85,17 +33,35 @@ const CanvasComponent = ({
         preserveObjectStacking: true,
       });
       fabricCanvasRef.current = canvas;
+      canvas.selection = false;
 
       setCanvasIDs((prev: fabric.Canvas[]) =>
         Array.isArray(prev) ? [...prev, canvas] : [canvas],
       );
 
+      setCanvasSelected({ id: 0, canvas: canvas });
+
+      canvas.on("selection:created", () => {
+        setActiveObj(() => true);
+      });
+
+      canvas.on("selection:cleared", () => {
+        setActiveObj(() => false);
+      });
+
       canvas.on("mouse:down", () => {
+        setCanvasSelected((prev: { id: number; canvas: fabric.Canvas }) => {
+          if (prev.canvas && prev.id !== id) {
+            prev.canvas.discardActiveObject();
+            prev.canvas.renderAll();
+          }
+          return { id: id, canvas: canvas };
+        });
         setCanvasSelected({ id: id, canvas: canvas });
         canvas.renderAll();
       });
     }
-  }, [id, setCanvasSelected, setCanvasIDs]);
+  }, [id, setCanvasSelected, setCanvasIDs, setActiveObj]);
 
   useEffect(() => {
     if (fabricCanvasRef.current) {
@@ -137,6 +103,8 @@ export function ImgPDF() {
     canvas: fabric.Canvas;
   }>();
 
+  const [activeObj, setActiveObj] = useState<boolean>(false);
+
   const [showAlert_RemoveConfirmation, setShowAlert_RemoveConfirmation] =
     useState<boolean>(false);
   const [showAlert_NoSelected, setShowAlert_NoSelected] =
@@ -155,7 +123,7 @@ export function ImgPDF() {
         fabricCanvases={fabricCanvases}
         canvasZoom={canvasZoom}
         setCanvasZoom={setCanvasZoom}
-        handleAddImage={handleAddImage}
+        activeObj={activeObj}
       />
 
       <div className="flex w-full justify-center pt-10">
@@ -163,7 +131,7 @@ export function ImgPDF() {
           {canvasIDs.map((value, _) => (
             <div key={value} className="flex items-center pb-4">
               <p
-                className={`select-none pr-2 text-xl text-red-600 ${canvasSelected?.id === value ? "" : "invisible"}`}
+                className={`select-none whitespace-nowrap pr-2 text-xl text-red-600 ${canvasSelected?.id === value ? "" : "invisible"}`}
               >
                 {"-->"}
               </p>
@@ -177,41 +145,11 @@ export function ImgPDF() {
                     : ""
                 }
                 zoom={canvasZoom}
+                setActiveObj={setActiveObj}
               />
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="sticky top-0 h-80 w-36 bg-red-500">
-        <button
-          onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.bringForward();
-          }}
-        >
-          Move forward
-        </button>
-        <button
-          onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.bringToFront();
-          }}
-        >
-          Send to top
-        </button>
-        <button
-          onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.sendBackwards();
-          }}
-        >
-          Move backwards
-        </button>
-        <button
-          onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.sendToBack();
-          }}
-        >
-          Send to bottom
-        </button>
       </div>
 
       {showAlert_RemoveConfirmation && (
@@ -235,7 +173,7 @@ export function ImgPDF() {
       <Link
         href={"https://github.com/qerplunk/img-pdf"}
         target="_blank"
-        className="absolute right-0 top-0"
+        className="fixed right-0 top-0"
       >
         <p className="select-none rounded-bl-md bg-cyan-900 p-1 text-white">
           GitHub
