@@ -149,6 +149,7 @@ export const SideMenu = ({
           <input
             id="image-upload"
             type="file"
+            accept="image/*"
             onChange={handleAddImage(canvasSelected, canvasZoom)}
             className="hidden"
           />
