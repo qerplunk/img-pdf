@@ -19,7 +19,6 @@
 
 ## Work in Progress (in order of importance)
 
-- Specify pdf export name
 - Specify pdf image export quality
 - Drag and drop images to import them
 

@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
 import Image from "next/image";
 import { MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT, PAGE_WIDTH } from "../PDF_Settings";
+import { useState } from "react";
 
 const handleAddImage =
   (
@@ -82,6 +83,8 @@ export const SideMenu = ({
   setCanvasZoom: Function;
   activeObj: boolean;
 }) => {
+  const [fileName, setFilename] = useState<string>("img_combined");
+
   return (
     <div
       id="SideMenu"
@@ -176,6 +179,20 @@ export const SideMenu = ({
           </button>
         </div>
 
+        <div id="filename" className="pb-1 text-center">
+          <label htmlFor="filename-input" className="text-white">
+            Save as:
+          </label>
+          <input
+            id="filename-input"
+            className="h-8 w-full border-2 border-white bg-gray-800 px-2 text-sm text-white"
+            placeholder={fileName}
+            onChange={(e) => {
+              setFilename(e.target.value);
+            }}
+          />
+        </div>
+
         <button
           id="Download"
           className="flex h-12 flex-row items-center justify-center rounded-sm border-2 border-white text-lg text-white hover:bg-red-500"
@@ -214,7 +231,22 @@ export const SideMenu = ({
               canvas.setWidth(prevW);
               canvas.setHeight(prevH);
             });
-            pdf.save("img_combined.pdf");
+
+            const splitFilename = fileName.split(".");
+            let finalName = fileName;
+            let finalExtension = "";
+
+            const extension = splitFilename[splitFilename.length - 1];
+            if (extension !== "pdf") {
+              finalExtension = ".pdf";
+            }
+
+            if (splitFilename[0] === "") {
+              finalName = "img_combined";
+              finalExtension = ".pdf";
+            }
+
+            pdf.save(finalName + finalExtension);
           }}
         >
           <Image
