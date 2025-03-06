@@ -186,7 +186,7 @@ export const SideMenu = ({
           <input
             id="filename-input"
             className="h-8 w-full border-2 border-white bg-gray-800 px-2 text-sm text-white"
-            placeholder={fileName}
+            placeholder="img_combined.pdf"
             onChange={(e) => {
               setFilename(e.target.value);
             }}

@@ -15,6 +15,7 @@
 - Select an image to move or resize
 - Delete images or pages by selecting them and pressing the trash icon
 - Add blank pages for more space
+- Specify the exported PDF file name, or leave as default
 - Download as a single PDF file by pressing `IMG -> PDF`
 
 ## Work in Progress (in order of importance)
