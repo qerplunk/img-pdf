@@ -1,4 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
+type AlertScreenProps = {
+  canvasSelected?: { id: number; canvas: fabric.Canvas };
+  setCanvasSelected: Function;
+  canvasIDs: number[];
+  setCanvasIDs: Function;
+  fabricCanvases?: fabric.Canvas[];
+  setC: Function;
+  setShowAlert_RemoveConfirmation: Function;
+};
 
 export const AlertScreen = ({
   canvasSelected,
@@ -8,15 +18,34 @@ export const AlertScreen = ({
   fabricCanvases,
   setC,
   setShowAlert_RemoveConfirmation,
-}: {
-  canvasSelected: { id: number; canvas: fabric.Canvas } | undefined;
-  setCanvasSelected: Function;
-  canvasIDs: number[];
-  setCanvasIDs: Function;
-  fabricCanvases: fabric.Canvas[] | undefined;
-  setC: Function;
-  setShowAlert_RemoveConfirmation: Function;
-}) => {
+}: AlertScreenProps) => {
+  const handleDeletePage = () => {
+    setShowAlert_RemoveConfirmation(false);
+    const remove_canvas_id = canvasSelected?.id;
+
+    let remove_page_num = 0;
+    canvasIDs.map((value, index) => {
+      if (remove_canvas_id === value) {
+        remove_page_num = index;
+        return;
+      }
+    });
+
+    setCanvasIDs((prev: number[]) =>
+      prev.filter((id) => {
+        return id !== remove_canvas_id;
+      }),
+    );
+
+    setC((prev: fabric.Canvas[]) =>
+      prev.filter((_, index) => {
+        return index !== remove_page_num;
+      }),
+    );
+    // Setting the 0th canvas as a temporary canvas, as -1 makes it ignore it either way
+    setCanvasSelected({ id: -1, canvas: fabricCanvases!.at(0)! });
+  };
+
   return (
     <div id="Alert_RemoveConfirmation" className="fixed inset-0 z-10">
       <div
@@ -24,7 +53,7 @@ export const AlertScreen = ({
         onClick={() => {
           setShowAlert_RemoveConfirmation(false);
         }}
-      ></div>
+      />
       <div className="fixed left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-md bg-cyan-900 px-14 py-8">
         <p className="select-none text-center text-lg text-neutral-100">
           Delete page and its contents?
@@ -40,32 +69,7 @@ export const AlertScreen = ({
           </button>
           <button
             className="w-20 rounded-md bg-gray-400 px-2 py-1 hover:bg-red-500"
-            onClick={() => {
-              setShowAlert_RemoveConfirmation(false);
-              const remove_canvas_id = canvasSelected?.id;
-
-              let remove_page_num = 0;
-              canvasIDs.map((value, index) => {
-                if (remove_canvas_id === value) {
-                  remove_page_num = index;
-                  return;
-                }
-              });
-
-              setCanvasIDs((prev: number[]) =>
-                prev.filter((id) => {
-                  return id !== remove_canvas_id;
-                }),
-              );
-
-              setC((prev: fabric.Canvas[]) =>
-                prev.filter((_, index) => {
-                  return index !== remove_page_num;
-                }),
-              );
-              // Setting the 0th canvas as a temporary canvas, as -1 makes it ignore it either way
-              setCanvasSelected({ id: -1, canvas: fabricCanvases!.at(0)! });
-            }}
+            onClick={handleDeletePage}
           >
             Yes
           </button>
@@ -75,15 +79,17 @@ export const AlertScreen = ({
   );
 };
 
+type AlertTimeoutProps = {
+  showAlert: boolean;
+  setShowAlert: any;
+  text: string;
+};
+
 export const AlertTimeout = ({
   showAlert,
   setShowAlert,
   text,
-}: {
-  showAlert: boolean;
-  setShowAlert: any;
-  text: string;
-}) => {
+}: AlertTimeoutProps) => {
   useEffect(() => {
     if (showAlert) {
       const timer = setTimeout(() => {
