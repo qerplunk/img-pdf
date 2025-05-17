@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { fabric } from "fabric";
-import { PAGE_HEIGHT, PAGE_WIDTH } from "../PDF_Settings";
+import { PAGE_HEIGHT, PAGE_WIDTH } from "@/config/pdfDocument";
 
 type CanvasComponentProps = {
   id: number;

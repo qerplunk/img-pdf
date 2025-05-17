@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AlertScreen, AlertTimeout } from "./components/Alerts";
 import { SideMenu } from "./components/SideMenu";
 import { CanvasComponent } from "./components/CanvasComponent";
-import { initializeFabricSettings } from "@/config/fabricConfig";
+import { initializeFabricSettings } from "@/config/fabric";
 
 export function ImgPDF() {
   const [canvasZoom, setCanvasZoom] = useState<number>(0.8);

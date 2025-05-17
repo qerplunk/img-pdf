@@ -1,7 +1,12 @@
 import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
 import Image from "next/image";
-import { MAX_ZOOM, MIN_ZOOM, PAGE_HEIGHT, PAGE_WIDTH } from "../PDF_Settings";
+import {
+  MAX_ZOOM,
+  MIN_ZOOM,
+  PAGE_HEIGHT,
+  PAGE_WIDTH,
+} from "@/config/pdfDocument";
 import { useState } from "react";
 
 const handleAddImage =
