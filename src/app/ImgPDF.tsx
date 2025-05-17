@@ -1,22 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fabric } from "fabric";
 import Link from "next/link";
 import { AlertScreen, AlertTimeout } from "./components/Alerts";
 import { SideMenu } from "./components/SideMenu";
 import { CanvasComponent } from "./components/CanvasComponent";
+import { initializeFabricSettings } from "@/config/fabricConfig";
 
 export function ImgPDF() {
-  fabric.Object.prototype.transparentCorners = false;
-  fabric.Object.prototype.cornerColor = "#FF0000";
-  fabric.Object.prototype.cornerStyle = "rect";
-  fabric.Object.prototype.cornerStrokeColor = "#FFFFFF";
-  fabric.Object.prototype.cornerSize = 12;
-  fabric.Object.prototype.borderColor = "#FF0000";
-  fabric.Object.prototype.borderScaleFactor = 2;
-  fabric.Object.prototype.hasRotatingPoint = true;
-  fabric.Object.prototype.rotatingPointOffset = 0.1;
-
   const [canvasZoom, setCanvasZoom] = useState<number>(0.8);
 
   // Store fabric canvases, used to add images and export
@@ -38,6 +29,10 @@ export function ImgPDF() {
     useState<boolean>(false);
   const [showAlert_NoSelected, setShowAlert_NoSelected] =
     useState<boolean>(false);
+
+  useEffect(() => {
+    initializeFabricSettings();
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full bg-stone-900 pb-28">
