@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
 import Image from "next/image";
@@ -7,7 +8,6 @@ import {
   PAGE_HEIGHT,
   PAGE_WIDTH,
 } from "@/config/pdfDocument";
-import { useState } from "react";
 
 const handleAddImage =
   (
@@ -15,12 +15,12 @@ const handleAddImage =
     canvasZoom: number,
   ) =>
   (event: any) => {
-    if (canvasSelected?.id === -1 || canvasSelected?.id === undefined) {
+    if (canvasSelected?.id === -1 || !canvasSelected?.id) {
       event.target.value = "";
       return;
     }
 
-    if (canvasSelected.canvas === undefined) {
+    if (!canvasSelected.canvas) {
       return;
     }
 
@@ -63,6 +63,20 @@ const handleAddImage =
     event.target.value = "";
   };
 
+type SideMenuProps = {
+  canvasSelected?: { id: number; canvas: fabric.Canvas };
+  canvases: number[];
+  setShowAlert_RemoveConfirmation: Function;
+  setShowAlert_NoSelected: Function;
+  setCanvases: Function;
+  nextBlankID: number;
+  setNextBlankID: Function;
+  canvasZoom: number;
+  fabricCanvases?: fabric.Canvas[];
+  setCanvasZoom: Function;
+  activeObj: boolean;
+};
+
 export const SideMenu = ({
   canvasSelected,
   canvases,
@@ -75,19 +89,7 @@ export const SideMenu = ({
   fabricCanvases,
   setCanvasZoom,
   activeObj,
-}: {
-  canvasSelected: { id: number; canvas: fabric.Canvas } | undefined;
-  canvases: number[];
-  setShowAlert_RemoveConfirmation: Function;
-  setShowAlert_NoSelected: Function;
-  setCanvases: Function;
-  nextBlankID: number;
-  setNextBlankID: Function;
-  canvasZoom: number;
-  fabricCanvases: fabric.Canvas[] | undefined;
-  setCanvasZoom: Function;
-  activeObj: boolean;
-}) => {
+}: SideMenuProps) => {
   const [fileName, setFilename] = useState<string>("img_combined");
 
   return (
@@ -99,12 +101,13 @@ export const SideMenu = ({
         <div id="RemoveObjectCanvas" className="pb-1">
           <button
             onClick={() => {
-              if (canvasSelected !== undefined && canvasSelected.id !== -1) {
-                const activeOjb = canvasSelected.canvas.getActiveObject();
-                if (activeOjb) {
-                  canvasSelected.canvas.remove(activeOjb);
+              if (canvasSelected && canvasSelected.id !== -1) {
+                const activeOjbSelected =
+                  canvasSelected.canvas.getActiveObject();
+                if (activeOjbSelected) {
+                  canvasSelected.canvas.remove(activeOjbSelected);
                 } else {
-                  if (canvasSelected.id !== -1 && canvases?.length > 1) {
+                  if (canvases?.length > 1) {
                     setShowAlert_RemoveConfirmation(true);
                     setShowAlert_NoSelected(false);
                   }
@@ -128,16 +131,11 @@ export const SideMenu = ({
         <div id="AddImage" className="pb-1">
           <label
             htmlFor={
-              canvasSelected?.id !== -1 && canvasSelected?.id !== undefined
-                ? "image-upload"
-                : ""
+              canvasSelected && canvasSelected.id !== -1 ? "image-upload" : ""
             }
             className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
             onClick={() => {
-              if (
-                canvasSelected?.id === -1 ||
-                canvasSelected?.id === undefined
-              ) {
+              if (!canvasSelected || canvasSelected?.id === -1) {
                 setShowAlert_NoSelected(true);
               } else {
                 setShowAlert_NoSelected(false);
@@ -164,7 +162,6 @@ export const SideMenu = ({
         </div>
 
         <div id="AddPage" className="pb-1">
-          {" "}
           <button
             onClick={() => {
               canvasSelected?.canvas.discardActiveObject().renderAll();
@@ -270,10 +267,7 @@ export const SideMenu = ({
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
-                  let newZoom = prev + 0.1;
-                  if (newZoom > MAX_ZOOM) {
-                    newZoom = MAX_ZOOM;
-                  }
+                  let newZoom = Math.min(MAX_ZOOM, prev + 0.1);
                   return newZoom;
                 });
               }}
@@ -284,10 +278,7 @@ export const SideMenu = ({
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
-                  let newZoom = prev - 0.1;
-                  if (newZoom <= MIN_ZOOM) {
-                    newZoom = MIN_ZOOM;
-                  }
+                  let newZoom = Math.max(MIN_ZOOM, prev - 0.1);
                   return newZoom;
                 });
               }}
