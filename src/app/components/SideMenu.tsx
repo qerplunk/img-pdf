@@ -7,6 +7,9 @@ import {
   MIN_ZOOM,
   PAGE_HEIGHT,
   PAGE_WIDTH,
+  PDF_COMPRESSION,
+  PDF_IMAGE_MULTIPLIER,
+  PDF_IMAGE_QUALITY,
 } from "@/config/pdfDocument";
 
 const handleAddImage =
@@ -217,8 +220,8 @@ export const SideMenu = ({
               pdf.addImage({
                 imageData: canvas.toDataURL({
                   format: "image/jpeg",
-                  quality: 1.0,
-                  multiplier: 1.7,
+                  quality: PDF_IMAGE_QUALITY,
+                  multiplier: PDF_IMAGE_MULTIPLIER,
                 }),
                 format: "JPEG",
                 x: 0,
@@ -226,7 +229,7 @@ export const SideMenu = ({
                 width: pdf.internal.pageSize.getWidth(),
                 height: pdf.internal.pageSize.getHeight(),
                 alias: "",
-                compression: "MEDIUM",
+                compression: PDF_COMPRESSION,
               });
 
               canvas.setZoom(prevZoom);
