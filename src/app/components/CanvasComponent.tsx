@@ -39,7 +39,9 @@ export function CanvasComponent({
         Array.isArray(prev) ? [...prev, canvas] : [canvas],
       );
 
-      setCanvasSelected({ id: 0, canvas: canvas });
+      if (!canvasSelected && id === 0) {
+        setCanvasSelected({ id: 0, canvas: canvas });
+      }
 
       canvas.on("selection:created", () => {
         setObjectIsSelected(true);
