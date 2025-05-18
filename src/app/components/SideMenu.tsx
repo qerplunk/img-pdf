@@ -10,6 +10,7 @@ import {
   PDF_COMPRESSION,
   PDF_IMAGE_MULTIPLIER,
   PDF_IMAGE_QUALITY,
+  ZOOM_STEP,
 } from "@/config/pdfDocument";
 
 const handleAddImage =
@@ -270,7 +271,7 @@ export const SideMenu = ({
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
-                  let newZoom = Math.min(MAX_ZOOM, prev + 0.1);
+                  let newZoom = Math.min(MAX_ZOOM, prev + ZOOM_STEP);
                   return newZoom;
                 });
               }}
@@ -281,7 +282,7 @@ export const SideMenu = ({
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
               onClick={() => {
                 setCanvasZoom((prev: number) => {
-                  let newZoom = Math.max(MIN_ZOOM, prev - 0.1);
+                  let newZoom = Math.max(MIN_ZOOM, prev - ZOOM_STEP);
                   return newZoom;
                 });
               }}
