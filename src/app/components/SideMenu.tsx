@@ -3,28 +3,20 @@ import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
 import Image from "next/image";
 import {
-  MAX_ZOOM,
-  MIN_ZOOM,
   PAGE_HEIGHT,
   PAGE_WIDTH,
   PDF_COMPRESSION,
   PDF_IMAGE_MULTIPLIER,
   PDF_IMAGE_QUALITY,
-  ZOOM_STEP,
 } from "@/config/pdfDocument";
+import { CanvasType } from "../ImgPDF";
+import { useCanvasStore } from "@/utils/store";
 
 const handleAddImage =
-  (
-    canvasSelected: { id: number; canvas: fabric.Canvas } | undefined,
-    canvasZoom: number,
-  ) =>
+  (canvasSelected: CanvasType | undefined, canvasZoom: number) =>
   (event: any) => {
-    if (!canvasSelected || canvasSelected.id === -1) {
+    if (!canvasSelected) {
       event.target.value = "";
-      return;
-    }
-
-    if (!canvasSelected.canvas) {
       return;
     }
 
@@ -68,33 +60,33 @@ const handleAddImage =
   };
 
 type SideMenuProps = {
-  canvasSelected?: { id: number; canvas: fabric.Canvas };
   canvases: number[];
   setShowAlert_RemoveConfirmation: Function;
   setShowAlert_NoSelected: Function;
   setCanvases: Function;
-  nextBlankID: number;
-  setNextBlankID: Function;
-  canvasZoom: number;
   fabricCanvases?: fabric.Canvas[];
-  setCanvasZoom: Function;
-  activeObj: boolean;
 };
 
 export const SideMenu = ({
-  canvasSelected,
   canvases,
   setShowAlert_RemoveConfirmation,
   setShowAlert_NoSelected,
   setCanvases,
-  nextBlankID,
-  setNextBlankID,
-  canvasZoom,
   fabricCanvases,
-  setCanvasZoom,
-  activeObj,
 }: SideMenuProps) => {
   const [fileName, setFilename] = useState<string>("img_combined");
+
+  const canvasZoom = useCanvasStore((state) => state.canvasZoom);
+  const increaseZoom = useCanvasStore((state) => state.increaseCanvasZoom);
+  const decreaseZoom = useCanvasStore((state) => state.decreaseCanvasZoom);
+
+  const canvasSelected = useCanvasStore((state) => state.canvasSelected);
+  const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
+
+  const nextBlankID = useCanvasStore((state) => state.nextBlankID);
+  const incrementBlankID = useCanvasStore((state) => state.incrementBlankID);
+
+  const objectIsSelected = useCanvasStore((state) => state.objectIsSelected);
 
   return (
     <div
@@ -105,13 +97,13 @@ export const SideMenu = ({
         <div id="RemoveObjectCanvas" className="pb-1">
           <button
             onClick={() => {
-              if (canvasSelected && canvasSelected.id !== -1) {
-                const activeOjbSelected =
+              if (canvasSelected) {
+                const activeObjectSelected =
                   canvasSelected.canvas.getActiveObject();
-                if (activeOjbSelected) {
-                  canvasSelected.canvas.remove(activeOjbSelected);
+                if (activeObjectSelected) {
+                  canvasSelected.canvas.remove(activeObjectSelected);
                 } else {
-                  if (canvases?.length > 1) {
+                  if (canvases && canvases.length > 1) {
                     setShowAlert_RemoveConfirmation(true);
                     setShowAlert_NoSelected(false);
                   }
@@ -134,12 +126,10 @@ export const SideMenu = ({
 
         <div id="AddImage" className="pb-1">
           <label
-            htmlFor={
-              canvasSelected && canvasSelected.id !== -1 ? "image-upload" : ""
-            }
+            htmlFor={canvasSelected ? "image-upload" : ""}
             className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
             onClick={() => {
-              if (!canvasSelected || canvasSelected?.id === -1) {
+              if (!canvasSelected) {
                 setShowAlert_NoSelected(true);
               } else {
                 setShowAlert_NoSelected(false);
@@ -169,8 +159,9 @@ export const SideMenu = ({
           <button
             onClick={() => {
               canvasSelected?.canvas.discardActiveObject().renderAll();
-              setCanvases((prev: fabric.Canvas[]) => [...prev, nextBlankID]);
-              setNextBlankID((prev: number) => prev + 1);
+              setCanvases((prev: number[]) => [...prev, nextBlankID]);
+              incrementBlankID();
+              setCanvasSelected(undefined);
             }}
             className="flex h-full w-full flex-row items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
           >
@@ -269,35 +260,32 @@ export const SideMenu = ({
           <span className="flex justify-center gap-x-4">
             <button
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
-              onClick={() => {
-                setCanvasZoom((prev: number) => {
-                  let newZoom = Math.min(MAX_ZOOM, prev + ZOOM_STEP);
-                  return newZoom;
-                });
-              }}
+              onClick={increaseZoom}
             >
               +
             </button>
             <button
               className="w-12 rounded-lg border-2 border-white text-2xl text-white hover:bg-red-500"
-              onClick={() => {
-                setCanvasZoom((prev: number) => {
-                  let newZoom = Math.max(MIN_ZOOM, prev - ZOOM_STEP);
-                  return newZoom;
-                });
-              }}
+              onClick={decreaseZoom}
             >
               -
             </button>
           </span>
         </div>
       </div>
-      <div className={`w-full space-y-1 text-white ${!activeObj && "hidden"}`}>
+      <div
+        className={`w-full space-y-1 text-white ${!objectIsSelected && "hidden"}`}
+      >
         <p className="select-none text-center text-xl">Image settings</p>
         <button
           className="w-full border-2 border-white hover:bg-red-500"
           onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.bringForward();
+            if (!canvasSelected) {
+              console.log("Move forward, canvas is undefined");
+              return;
+            }
+
+            canvasSelected.canvas.getActiveObject()?.bringForward();
           }}
         >
           Move forward
@@ -305,7 +293,11 @@ export const SideMenu = ({
         <button
           className="w-full border-2 border-white hover:bg-red-500"
           onClick={() => {
-            canvasSelected?.canvas.getActiveObject()?.sendBackwards();
+            if (!canvasSelected) {
+              console.log("Move backwards, canvas is undefined");
+              return;
+            }
+            canvasSelected.canvas.getActiveObject()?.sendBackwards();
           }}
         >
           Move backwards
@@ -315,8 +307,12 @@ export const SideMenu = ({
           onClick={() => {
             if (canvasSelected) {
               const img = canvasSelected.canvas.getActiveObject();
+              if (!img) {
+                console.log("No image selected");
+                return;
+              }
 
-              img?.set({
+              img.set({
                 left:
                   (canvasSelected.canvas.getWidth() / canvasZoom -
                     img.getScaledWidth()) /
@@ -333,8 +329,12 @@ export const SideMenu = ({
           onClick={() => {
             if (canvasSelected) {
               const img = canvasSelected.canvas.getActiveObject();
+              if (!img) {
+                console.log("No image selected");
+                return;
+              }
 
-              img?.set({
+              img.set({
                 top:
                   (canvasSelected.canvas.getHeight() / canvasZoom -
                     img.getScaledHeight()) /

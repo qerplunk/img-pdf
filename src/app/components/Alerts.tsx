@@ -1,27 +1,29 @@
 import { useEffect } from "react";
+import { useCanvasStore } from "@/utils/store";
 
 type AlertScreenProps = {
-  canvasSelected?: { id: number; canvas: fabric.Canvas };
-  setCanvasSelected: Function;
   canvasIDs: number[];
   setCanvasIDs: Function;
-  fabricCanvases?: fabric.Canvas[];
   setC: Function;
   setShowAlert_RemoveConfirmation: Function;
 };
 
 export const AlertScreen = ({
-  canvasSelected,
-  setCanvasSelected,
   canvasIDs,
   setCanvasIDs,
-  fabricCanvases,
   setC,
   setShowAlert_RemoveConfirmation,
 }: AlertScreenProps) => {
+  const canvasSelected = useCanvasStore((state) => state.canvasSelected);
+  const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
+
   const handleDeletePage = () => {
     setShowAlert_RemoveConfirmation(false);
-    const remove_canvas_id = canvasSelected?.id;
+    if (!canvasSelected) {
+      return;
+    }
+
+    const remove_canvas_id = canvasSelected.id;
 
     let remove_page_num = 0;
     canvasIDs.map((value, index) => {
@@ -42,8 +44,8 @@ export const AlertScreen = ({
         return index !== remove_page_num;
       }),
     );
-    // Setting the 0th canvas as a temporary canvas, as -1 makes it ignore it either way
-    setCanvasSelected({ id: -1, canvas: fabricCanvases!.at(0)! });
+
+    setCanvasSelected(undefined);
   };
 
   return (

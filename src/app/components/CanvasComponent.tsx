@@ -2,26 +2,27 @@
 import { useEffect, useRef } from "react";
 import { fabric } from "fabric";
 import { PAGE_HEIGHT, PAGE_WIDTH } from "@/config/pdfDocument";
+import { useCanvasStore } from "@/utils/store";
 
 type CanvasComponentProps = {
   id: number;
-  setCanvasSelected: Function;
   setCanvasIDs: Function;
   classname: string;
-  zoom: number;
-  setActiveObj: Function;
 };
 
 export function CanvasComponent({
   id,
-  setCanvasSelected,
   setCanvasIDs,
   classname,
-  zoom,
-  setActiveObj,
 }: CanvasComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const canvasZoom = useCanvasStore((state) => state.canvasZoom);
+  const canvasSelected = useCanvasStore((state) => state.canvasSelected);
+  const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
+  const setObjectIsSelected = useCanvasStore(
+    (state) => state.setObjectIsSelected,
+  );
 
   useEffect(() => {
     if (!fabricCanvasRef.current) {
@@ -41,37 +42,39 @@ export function CanvasComponent({
       setCanvasSelected({ id: 0, canvas: canvas });
 
       canvas.on("selection:created", () => {
-        setActiveObj(() => true);
+        setObjectIsSelected(true);
       });
 
       canvas.on("selection:cleared", () => {
-        setActiveObj(() => false);
+        setObjectIsSelected(false);
       });
 
       canvas.on("mouse:down", () => {
-        setCanvasSelected((prev: { id: number; canvas: fabric.Canvas }) => {
-          if (prev.canvas && prev.id !== id) {
-            prev.canvas.discardActiveObject();
-            prev.canvas.renderAll();
-          }
-          return { id: id, canvas: canvas };
-        });
-        setCanvasSelected({ id: id, canvas: canvas });
+        setCanvasSelected({ id, canvas });
+        if (canvasSelected) {
+          canvasSelected.canvas.discardActiveObject();
+        }
         canvas.renderAll();
       });
     }
-  }, [id, setCanvasSelected, setCanvasIDs, setActiveObj]);
+  }, [
+    id,
+    canvasSelected,
+    setCanvasSelected,
+    setCanvasIDs,
+    setObjectIsSelected,
+  ]);
 
   useEffect(() => {
     if (fabricCanvasRef.current) {
       const canvas = fabricCanvasRef.current;
 
-      canvas.setZoom(zoom);
+      canvas.setZoom(canvasZoom);
       canvas.setWidth(PAGE_WIDTH * canvas.getZoom());
       canvas.setHeight(PAGE_HEIGHT * canvas.getZoom());
       canvas.renderAll();
     }
-  }, [zoom]);
+  }, [canvasZoom]);
 
   return <canvas ref={canvasRef} id={id.toString()} className={classname} />;
 }

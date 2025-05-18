@@ -13,7 +13,8 @@
     "jspdf": "^2.5.1",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@types/fabric": "^5.3.7",
