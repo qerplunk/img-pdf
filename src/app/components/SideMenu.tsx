@@ -19,7 +19,7 @@ const handleAddImage =
     canvasZoom: number,
   ) =>
   (event: any) => {
-    if (canvasSelected?.id === -1 || !canvasSelected?.id) {
+    if (!canvasSelected || canvasSelected.id === -1) {
       event.target.value = "";
       return;
     }
