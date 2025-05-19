@@ -4,17 +4,17 @@ import { fabric } from "fabric";
 import { PAGE_HEIGHT, PAGE_WIDTH } from "@/config/pdfDocument";
 import { useCanvasStore } from "@/utils/store";
 
+export type CanvasType = {
+  id: number;
+  canvas: fabric.Canvas;
+};
+
 type CanvasComponentProps = {
   id: number;
-  setCanvasIDs: Function;
   classname: string;
 };
 
-export function CanvasComponent({
-  id,
-  setCanvasIDs,
-  classname,
-}: CanvasComponentProps) {
+export function CanvasComponent({ id, classname }: CanvasComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const canvasZoom = useCanvasStore((state) => state.canvasZoom);
@@ -23,6 +23,8 @@ export function CanvasComponent({
   const setObjectIsSelected = useCanvasStore(
     (state) => state.setObjectIsSelected,
   );
+
+  const addFabricCanvas = useCanvasStore((state) => state.addFabricCanvas);
 
   useEffect(() => {
     if (!fabricCanvasRef.current) {
@@ -35,9 +37,7 @@ export function CanvasComponent({
       fabricCanvasRef.current = canvas;
       canvas.selection = false;
 
-      setCanvasIDs((prev: number[]) =>
-        Array.isArray(prev) ? [...prev, canvas] : [canvas],
-      );
+      addFabricCanvas(canvas);
 
       if (!canvasSelected && id === 0) {
         setCanvasSelected({ id: 0, canvas: canvas });
@@ -63,8 +63,8 @@ export function CanvasComponent({
     id,
     canvasSelected,
     setCanvasSelected,
-    setCanvasIDs,
     setObjectIsSelected,
+    addFabricCanvas,
   ]);
 
   useEffect(() => {

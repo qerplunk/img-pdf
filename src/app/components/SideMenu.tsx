@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
@@ -10,8 +10,8 @@ import {
   PDF_IMAGE_MULTIPLIER,
   PDF_IMAGE_QUALITY,
 } from "@/config/pdfDocument";
-import { CanvasType } from "../ImgPDF";
 import { useCanvasStore } from "@/utils/store";
+import { CanvasType } from "./CanvasComponent";
 
 const handleAddImage =
   (canvasSelected: CanvasType | undefined, canvasZoom: number) =>
@@ -60,21 +60,7 @@ const handleAddImage =
     event.target.value = "";
   };
 
-type SideMenuProps = {
-  canvases: number[];
-  setShowAlert_RemoveConfirmation: Function;
-  setShowAlert_NoSelected: Function;
-  setCanvases: Function;
-  fabricCanvases?: fabric.Canvas[];
-};
-
-export const SideMenu = ({
-  canvases,
-  setShowAlert_RemoveConfirmation,
-  setShowAlert_NoSelected,
-  setCanvases,
-  fabricCanvases,
-}: SideMenuProps) => {
+export const SideMenu = () => {
   const [fileName, setFilename] = useState<string>("img_combined");
 
   const canvasZoom = useCanvasStore((state) => state.canvasZoom);
@@ -84,10 +70,19 @@ export const SideMenu = ({
   const canvasSelected = useCanvasStore((state) => state.canvasSelected);
   const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
 
-  const nextBlankID = useCanvasStore((state) => state.nextBlankID);
-  const incrementBlankID = useCanvasStore((state) => state.incrementBlankID);
+  const incrementValidContactIDs = useCanvasStore(
+    (state) => state.incrementValidCanvasIDs,
+  );
 
   const objectIsSelected = useCanvasStore((state) => state.objectIsSelected);
+  const validCanvasIDs = useCanvasStore((state) => state.validCanvasIDs);
+
+  const fabricCanvases = useCanvasStore((state) => state.fabricCanvases);
+
+  const setShowNoSelection = useCanvasStore(
+    (state) => state.setShowNoSelection,
+  );
+  const setShowRemovePage = useCanvasStore((state) => state.setShowRemovePage);
 
   return (
     <div
@@ -104,13 +99,13 @@ export const SideMenu = ({
                 if (activeObjectSelected) {
                   canvasSelected.canvas.remove(activeObjectSelected);
                 } else {
-                  if (canvases && canvases.length > 1) {
-                    setShowAlert_RemoveConfirmation(true);
-                    setShowAlert_NoSelected(false);
+                  if (validCanvasIDs.length > 1) {
+                    setShowRemovePage(true);
+                    setShowNoSelection(false);
                   }
                 }
               } else {
-                setShowAlert_NoSelected(true);
+                setShowNoSelection(true);
               }
             }}
             className="flex h-full w-full flex-row items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
@@ -130,10 +125,13 @@ export const SideMenu = ({
             htmlFor={canvasSelected ? "image-upload" : ""}
             className="flex h-full w-full cursor-pointer select-none items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
             onClick={() => {
+              console.log("Adding new image");
               if (!canvasSelected) {
-                setShowAlert_NoSelected(true);
+                console.log("No canvas selected");
+                setShowNoSelection(true);
               } else {
-                setShowAlert_NoSelected(false);
+                console.log("Canvas selected");
+                setShowNoSelection(false);
               }
             }}
           >
@@ -160,8 +158,7 @@ export const SideMenu = ({
           <button
             onClick={() => {
               canvasSelected?.canvas.discardActiveObject().renderAll();
-              setCanvases((prev: number[]) => [...prev, nextBlankID]);
-              incrementBlankID();
+              incrementValidContactIDs();
               setCanvasSelected(undefined);
             }}
             className="flex h-full w-full flex-row items-center justify-center rounded-sm border-2 border-white text-3xl text-white hover:bg-red-500"
@@ -201,7 +198,7 @@ export const SideMenu = ({
 
             const pdf = new jsPDF("p", "mm", "letter", true);
 
-            fabricCanvases?.forEach((canvas, pageNumber) => {
+            fabricCanvases.forEach((canvas, pageNumber) => {
               if (pageNumber >= 1) {
                 pdf.addPage();
               }
@@ -282,7 +279,6 @@ export const SideMenu = ({
           className="w-full border-2 border-white hover:bg-red-500"
           onClick={() => {
             if (!canvasSelected) {
-              console.log("Move forward, canvas is undefined");
               return;
             }
 
@@ -295,7 +291,6 @@ export const SideMenu = ({
           className="w-full border-2 border-white hover:bg-red-500"
           onClick={() => {
             if (!canvasSelected) {
-              console.log("Move backwards, canvas is undefined");
               return;
             }
             canvasSelected.canvas.getActiveObject()?.sendBackwards();
@@ -309,7 +304,6 @@ export const SideMenu = ({
             if (canvasSelected) {
               const img = canvasSelected.canvas.getActiveObject();
               if (!img) {
-                console.log("No image selected");
                 return;
               }
 
@@ -331,7 +325,6 @@ export const SideMenu = ({
             if (canvasSelected) {
               const img = canvasSelected.canvas.getActiveObject();
               if (!img) {
-                console.log("No image selected");
                 return;
               }
 

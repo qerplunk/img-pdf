@@ -1,42 +1,28 @@
 import { useEffect } from "react";
 import { useCanvasStore } from "@/utils/store";
 
-type AlertScreenProps = {
-  canvasIDs: number[];
-  setCanvasIDs: Function;
-  setC: Function;
-  setShowAlert_RemoveConfirmation: Function;
-};
-
-export const AlertScreen = ({
-  canvasIDs,
-  setCanvasIDs,
-  setC,
-  setShowAlert_RemoveConfirmation,
-}: AlertScreenProps) => {
+export const AlertScreen = () => {
   const canvasSelected = useCanvasStore((state) => state.canvasSelected);
+  const validCanvasIDs = useCanvasStore((state) => state.validCanvasIDs);
+
   const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
+  const invalidateID = useCanvasStore((state) => state.invalidateCanvasID);
+  const removeCanvasByIndex = useCanvasStore(
+    (state) => state.removeCanvasByIndex,
+  );
+  const setShowRemovePage = useCanvasStore((state) => state.setShowRemovePage);
 
   const handleDeletePage = () => {
-    setShowAlert_RemoveConfirmation(false);
+    setShowRemovePage(false);
     if (!canvasSelected) {
       return;
     }
 
-    const remove_canvas_id = canvasSelected.id;
-    let removePageNum = canvasIDs.findIndex((c) => c === remove_canvas_id);
+    const removeCanvasID = canvasSelected.id;
+    let removePageNum = validCanvasIDs.findIndex((c) => c === removeCanvasID);
 
-    setCanvasIDs((prev: number[]) =>
-      prev.filter((id) => {
-        return id !== remove_canvas_id;
-      }),
-    );
-
-    setC((prev: fabric.Canvas[]) =>
-      prev.filter((_, index) => {
-        return index !== removePageNum;
-      }),
-    );
+    invalidateID(removeCanvasID);
+    removeCanvasByIndex(removePageNum);
 
     setCanvasSelected(undefined);
   };
@@ -46,7 +32,7 @@ export const AlertScreen = ({
       <div
         className="absolute inset-0 bg-gray-400 opacity-50"
         onClick={() => {
-          setShowAlert_RemoveConfirmation(false);
+          setShowRemovePage(false);
         }}
       />
       <div className="fixed left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-md bg-cyan-900 px-14 py-8">
@@ -57,7 +43,7 @@ export const AlertScreen = ({
           <button
             className="w-20 rounded-md bg-gray-400 px-2 py-1 hover:bg-red-500"
             onClick={() => {
-              setShowAlert_RemoveConfirmation(false);
+              setShowRemovePage(false);
             }}
           >
             No
@@ -75,27 +61,26 @@ export const AlertScreen = ({
 };
 
 type AlertTimeoutProps = {
-  showAlert: boolean;
-  setShowAlert: any;
   text: string;
 };
 
-export const AlertTimeout = ({
-  showAlert,
-  setShowAlert,
-  text,
-}: AlertTimeoutProps) => {
+export const AlertTimeout = ({ text }: AlertTimeoutProps) => {
+  const showNoSelection = useCanvasStore((state) => state.showNoSelection);
+  const setShowNoSelection = useCanvasStore(
+    (state) => state.setShowNoSelection,
+  );
+
   useEffect(() => {
-    if (showAlert) {
+    if (showNoSelection) {
       const timer = setTimeout(() => {
-        setShowAlert(false);
+        setShowNoSelection(false);
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [showAlert, setShowAlert]);
+  }, [showNoSelection, setShowNoSelection]);
 
-  if (!showAlert) return null;
+  if (!showNoSelection) return null;
 
   return (
     <div className="fixed left-1/2 top-0 flex -translate-x-1/2 flex-col items-center rounded-b-md bg-cyan-900 px-14 py-3">
