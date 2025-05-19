@@ -11,6 +11,7 @@ export function ImgPDF() {
   const canvasSelected = useCanvasStore((state) => state.canvasSelected);
   const validCanvasIDs = useCanvasStore((state) => state.validCanvasIDs);
   const showRemovePage = useCanvasStore((state) => state.showRemovePage);
+  const showNoSelection = useCanvasStore((state) => state.showNoSelection);
 
   useEffect(() => {
     initializeFabricSettings();
@@ -43,8 +44,7 @@ export function ImgPDF() {
       </div>
 
       {showRemovePage && <AlertScreen />}
-
-      <AlertTimeout text="No page selected" />
+      {showNoSelection && <AlertTimeout text="No page selected" />}
 
       <Link
         href={"https://github.com/qerplunk/img-pdf"}

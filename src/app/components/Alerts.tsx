@@ -80,8 +80,6 @@ export const AlertTimeout = ({ text }: AlertTimeoutProps) => {
     }
   }, [showNoSelection, setShowNoSelection]);
 
-  if (!showNoSelection) return null;
-
   return (
     <div className="fixed left-1/2 top-0 flex -translate-x-1/2 flex-col items-center rounded-b-md bg-cyan-900 px-14 py-3">
       <p className="text-center text-lg text-neutral-100">{text}</p>
