@@ -10,12 +10,8 @@ type CanvasStore = {
   canvasSelected: CanvasType | undefined;
   setCanvasSelected: (canvas: CanvasType | undefined) => void;
 
-  fabricCanvases: fabric.Canvas[];
-  addCanvas: (canvas: fabric.Canvas) => void;
-  removeCanvas: (canvas: fabric.Canvas) => void;
-
   nextBlankID: number;
-  incrementBlankID: () => number;
+  incrementBlankID: () => void;
 
   objectIsSelected: boolean;
   setObjectIsSelected: (value: boolean) => void;
@@ -34,22 +30,6 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({ canvasZoom: newZoom });
   },
 
-  fabricCanvases: [],
-  addCanvas: (canvas: fabric.Canvas) => {
-    let canvases = get().fabricCanvases;
-    canvases.push(canvas);
-    set({ fabricCanvases: canvases });
-  },
-  removeCanvas: (canvas: fabric.Canvas) => {
-    let removePageNum = 0;
-    let canvases = get().fabricCanvases;
-    canvases.filter((_, id) => {
-      return id !== removePageNum;
-    });
-    canvases.push(canvas);
-    set({ fabricCanvases: canvases });
-  },
-
   canvasSelected: undefined,
   setCanvasSelected: (canvas) => {
     set(() => ({
@@ -60,7 +40,6 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   nextBlankID: 1,
   incrementBlankID: () => {
     set((state) => ({ nextBlankID: state.nextBlankID + 1 }));
-    return get().nextBlankID;
   },
 
   objectIsSelected: false,

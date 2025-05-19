@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 import { jsPDF } from "jspdf";
 import { fabric } from "fabric";
@@ -250,7 +251,7 @@ export const SideMenu = ({
             src={"/assets/new_image.png"}
             width={40}
             height={40}
-            alt={"New page"}
+            alt={"New image"}
             priority={true}
           />
           <p className="whitespace-nowrap">{"--> PDF"}</p>

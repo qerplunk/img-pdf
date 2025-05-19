@@ -35,7 +35,7 @@ export function CanvasComponent({
       fabricCanvasRef.current = canvas;
       canvas.selection = false;
 
-      setCanvasIDs((prev: fabric.Canvas[]) =>
+      setCanvasIDs((prev: number[]) =>
         Array.isArray(prev) ? [...prev, canvas] : [canvas],
       );
 

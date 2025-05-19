@@ -24,14 +24,7 @@ export const AlertScreen = ({
     }
 
     const remove_canvas_id = canvasSelected.id;
-
-    let remove_page_num = 0;
-    canvasIDs.map((value, index) => {
-      if (remove_canvas_id === value) {
-        remove_page_num = index;
-        return;
-      }
-    });
+    let removePageNum = canvasIDs.findIndex((c) => c === remove_canvas_id);
 
     setCanvasIDs((prev: number[]) =>
       prev.filter((id) => {
@@ -41,7 +34,7 @@ export const AlertScreen = ({
 
     setC((prev: fabric.Canvas[]) =>
       prev.filter((_, index) => {
-        return index !== remove_page_num;
+        return index !== removePageNum;
       }),
     );
 
