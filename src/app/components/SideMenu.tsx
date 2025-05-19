@@ -64,21 +64,17 @@ export const SideMenu = () => {
   const [fileName, setFilename] = useState<string>("img_combined");
 
   const canvasZoom = useCanvasStore((state) => state.canvasZoom);
+  const objectIsSelected = useCanvasStore((state) => state.objectIsSelected);
+  const validCanvasIDs = useCanvasStore((state) => state.validCanvasIDs);
+  const fabricCanvases = useCanvasStore((state) => state.fabricCanvases);
+  const canvasSelected = useCanvasStore((state) => state.canvasSelected);
+
   const increaseZoom = useCanvasStore((state) => state.increaseCanvasZoom);
   const decreaseZoom = useCanvasStore((state) => state.decreaseCanvasZoom);
-
-  const canvasSelected = useCanvasStore((state) => state.canvasSelected);
   const setCanvasSelected = useCanvasStore((state) => state.setCanvasSelected);
-
   const incrementValidContactIDs = useCanvasStore(
     (state) => state.incrementValidCanvasIDs,
   );
-
-  const objectIsSelected = useCanvasStore((state) => state.objectIsSelected);
-  const validCanvasIDs = useCanvasStore((state) => state.validCanvasIDs);
-
-  const fabricCanvases = useCanvasStore((state) => state.fabricCanvases);
-
   const setShowNoSelection = useCanvasStore(
     (state) => state.setShowNoSelection,
   );
